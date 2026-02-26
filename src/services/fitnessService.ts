@@ -1,11 +1,23 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { EverythingFitnessResult } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+let aiClient: GoogleGenAI | null = null;
+
+function getAIClient() {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is missing. Please configure it in Vercel Environment Variables.");
+  }
+  if (!aiClient) {
+    aiClient = new GoogleGenAI({ apiKey });
+  }
+  return aiClient;
+}
 
 export const fitnessService = {
   analyzeEnvironment: async (imageSrc: string): Promise<EverythingFitnessResult> => {
     try {
+      const ai = getAIClient();
       const base64Data = imageSrc.split(',')[1];
       const mimeType = imageSrc.split(',')[0].split(':')[1].split(';')[0];
 
