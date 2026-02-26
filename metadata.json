@@ -1,0 +1,5 @@
+{
+  "name": "AI Shapist",
+  "description": "Professional-grade AI posture analysis and musculoskeletal health assessment. Works offline.",
+  "requestFramePermissions": ["camera"]
+}
