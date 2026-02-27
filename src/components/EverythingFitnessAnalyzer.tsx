@@ -27,10 +27,10 @@ export const EverythingFitnessAnalyzer: React.FC<EverythingFitnessAnalyzerProps>
         if (isMounted) {
           onAnalysisComplete(result);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Analysis failed:", error);
         if (isMounted) {
-          alert(t.failAnalyze);
+          alert(`${t.failAnalyze}\nError: ${error.message}`);
           onCancel();
         }
       }
