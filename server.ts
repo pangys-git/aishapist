@@ -26,7 +26,8 @@ function getAIClient() {
 // API routes FIRST
 app.post("/api/analyze", async (req, res) => {
   try {
-    const { imageSrc } = req.body;
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    const imageSrc = body?.imageSrc;
     if (!imageSrc) {
       return res.status(400).json({ error: "Missing imageSrc" });
     }
