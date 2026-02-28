@@ -14,14 +14,15 @@ import { EverythingFitnessAnalyzer } from './components/EverythingFitnessAnalyze
 import { EverythingFitnessReport } from './components/EverythingFitnessReport';
 import { MoMoView } from './components/MoMoView';
 import { MuscleMasterView } from './components/MuscleMasterView';
-import { AnalysisResult, EverythingFitnessResult } from './types';
+import { AIShapistChat } from './components/AIShapistChat';
+import { AnalysisResult, EverythingFitnessResult, UserInfo } from './types';
 import { AnimatePresence, motion } from 'motion/react';
 import { Languages } from 'lucide-react';
 
 import { storageService } from './services/storage';
 import { useLanguage } from './context/LanguageContext';
 
-type AppState = 'HOME' | 'CAPTURE' | 'ANALYZING' | 'REPORT' | 'HISTORY' | 'EVERYTHING_FITNESS_CAPTURE' | 'EVERYTHING_FITNESS_ANALYZING' | 'EVERYTHING_FITNESS_REPORT' | 'MOMO' | 'MUSCLE_MASTER';
+type AppState = 'HOME' | 'CAPTURE' | 'ANALYZING' | 'REPORT' | 'HISTORY' | 'EVERYTHING_FITNESS_CAPTURE' | 'EVERYTHING_FITNESS_ANALYZING' | 'EVERYTHING_FITNESS_REPORT' | 'MOMO' | 'MUSCLE_MASTER' | 'AI_SHAPIST_CHAT';
 
 export default function App() {
   const { t, language, setLanguage } = useLanguage();
@@ -29,9 +30,13 @@ export default function App() {
   const [currentImages, setCurrentImages] = useState<{ Front?: string; Side?: string; Back?: string } | null>(null);
   const [currentResult, setCurrentResult] = useState<AnalysisResult | null>(null);
   const [everythingFitnessResult, setEverythingFitnessResult] = useState<EverythingFitnessResult | null>(null);
+  const [initialChatMessage, setInitialChatMessage] = useState<string>('');
 
-  const handleAnalyze = (images: { Front?: string; Side?: string; Back?: string }) => {
+  const [currentUserInfo, setCurrentUserInfo] = useState<UserInfo | undefined>(undefined);
+
+  const handleAnalyze = (images: { Front?: string; Side?: string; Back?: string }, userInfo?: UserInfo) => {
     setCurrentImages(images);
+    setCurrentUserInfo(userInfo);
     setState('ANALYZING');
   };
 
@@ -93,6 +98,7 @@ export default function App() {
               onEverythingFitness={() => setState('EVERYTHING_FITNESS_CAPTURE')}
               onMoMo={() => setState('MOMO')}
               onMuscleMaster={() => setState('MUSCLE_MASTER')}
+              onAIShapistChat={() => setState('AI_SHAPIST_CHAT')}
             />
           </motion.div>
         )}
@@ -135,6 +141,7 @@ export default function App() {
           >
             <PoseAnalyzer 
               images={currentImages} 
+              userInfo={currentUserInfo}
               onAnalysisComplete={handleAnalysisComplete} 
             />
           </motion.div>
@@ -167,6 +174,10 @@ export default function App() {
               result={currentResult} 
               onClose={() => setState('HOME')} 
               onSave={saveResult}
+              onConsultAIShapist={(msg) => {
+                setInitialChatMessage(msg);
+                setState('AI_SHAPIST_CHAT');
+              }}
             />
           </motion.div>
         )}
@@ -221,6 +232,23 @@ export default function App() {
             exit={{ opacity: 0 }}
           >
             <MuscleMasterView onBack={() => setState('HOME')} />
+          </motion.div>
+        )}
+
+        {state === 'AI_SHAPIST_CHAT' && (
+          <motion.div
+            key="ai_shapist_chat"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <AIShapistChat 
+              onBack={() => {
+                setState('HOME');
+                setInitialChatMessage('');
+              }} 
+              initialMessage={initialChatMessage}
+            />
           </motion.div>
         )}
       </AnimatePresence>

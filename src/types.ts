@@ -19,6 +19,13 @@ export interface PostureMetric {
   cues?: string[];
 }
 
+export interface UserInfo {
+  height?: number; // cm
+  weight?: number; // kg
+  waist?: number; // cm
+  hip?: number; // cm
+}
+
 export interface AnalysisResult {
   id: string;
   date: string;
@@ -31,6 +38,7 @@ export interface AnalysisResult {
   potentialConditions?: string[];
   images?: { Front?: string; Side?: string; Back?: string };
   allLandmarks?: { Front?: Landmark[]; Side?: Landmark[]; Back?: Landmark[] };
+  userInfo?: UserInfo;
 }
 
 export interface UserPlan {

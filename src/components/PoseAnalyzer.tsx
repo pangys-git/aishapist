@@ -1,16 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FilesetResolver, PoseLandmarker } from '@mediapipe/tasks-vision';
-import { AnalysisResult, Landmark, Exercise, PostureMetric } from '../types';
+import { AnalysisResult, Landmark, Exercise, PostureMetric, UserInfo } from '../types';
 import { analyzePosture } from '../utils/poseUtils';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../constants/translations';
 
 interface PoseAnalyzerProps {
   images: { Front?: string; Side?: string; Back?: string };
+  userInfo?: UserInfo;
   onAnalysisComplete: (result: AnalysisResult) => void;
 }
 
-export const PoseAnalyzer: React.FC<PoseAnalyzerProps> = ({ images, onAnalysisComplete }) => {
+export const PoseAnalyzer: React.FC<PoseAnalyzerProps> = ({ images, userInfo, onAnalysisComplete }) => {
   const { t, language } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -111,6 +112,71 @@ export const PoseAnalyzer: React.FC<PoseAnalyzerProps> = ({ images, onAnalysisCo
           }
         }
 
+        if (userInfo) {
+          if (userInfo.height && userInfo.weight) {
+            const heightM = userInfo.height / 100;
+            const bmi = userInfo.weight / (heightM * heightM);
+            let severity: 'Normal' | 'Mild' | 'Moderate' | 'Severe' = 'Normal';
+            let recommendation = language === 'en' ? 'Normal weight.' : '體重正常。';
+            
+            if (bmi < 18.5) {
+              severity = 'Mild';
+              recommendation = language === 'en' ? 'Underweight. Consider a balanced diet to gain weight.' : '體重過輕。建議均衡飲食以增加體重。';
+            } else if (bmi >= 24 && bmi < 27) {
+              severity = 'Mild';
+              recommendation = language === 'en' ? 'Overweight. Consider regular exercise and a balanced diet.' : '過重。建議規律運動與均衡飲食。';
+            } else if (bmi >= 27 && bmi < 30) {
+              severity = 'Moderate';
+              recommendation = language === 'en' ? 'Mild obesity. Consult a professional for a weight loss plan.' : '輕度肥胖。建議諮詢專業人士制定減重計畫。';
+            } else if (bmi >= 30) {
+              severity = 'Severe';
+              recommendation = language === 'en' ? 'Severe obesity. Please seek medical advice.' : '中度至重度肥胖。請尋求醫療協助。';
+            }
+
+            allMetrics.push({
+              key: 'bmi',
+              name: 'BMI',
+              value: parseFloat(bmi.toFixed(1)),
+              unit: '',
+              severity,
+              description: language === 'en' ? 'Body Mass Index' : '身體質量指數',
+              recommendation,
+              searchKeywords: language === 'en' ? 'BMI improvement' : '改善 BMI',
+              cues: []
+            });
+          }
+
+          if (userInfo.waist && userInfo.hip) {
+            const whr = userInfo.waist / userInfo.hip;
+            let severity: 'Normal' | 'Mild' | 'Moderate' | 'Severe' = 'Normal';
+            let recommendation = language === 'en' ? 'Normal waist-to-hip ratio.' : '腰臀比正常。';
+            
+            // Using general thresholds (Men > 0.9, Women > 0.85 indicates higher risk, we use a simplified threshold here)
+            if (whr >= 0.85 && whr < 0.9) {
+              severity = 'Mild';
+              recommendation = language === 'en' ? 'Slightly high. Monitor your diet and exercise.' : '偏高。注意飲食與運動。';
+            } else if (whr >= 0.9 && whr < 0.95) {
+              severity = 'Moderate';
+              recommendation = language === 'en' ? 'High. Increased risk of metabolic issues.' : '過高。代謝症候群風險增加。';
+            } else if (whr >= 0.95) {
+              severity = 'Severe';
+              recommendation = language === 'en' ? 'Very high. Please seek medical advice.' : '極高。請尋求醫療協助。';
+            }
+
+            allMetrics.push({
+              key: 'whr',
+              name: language === 'en' ? 'Waist-to-Hip Ratio' : '腰臀比',
+              value: parseFloat(whr.toFixed(2)),
+              unit: '',
+              severity,
+              description: language === 'en' ? 'Waist circumference divided by hip circumference' : '腰圍除以臀圍',
+              recommendation,
+              searchKeywords: language === 'en' ? 'Reduce waist-to-hip ratio' : '降低腰臀比',
+              cues: []
+            });
+          }
+        }
+
         if (allMetrics.length > 0 && isMounted) {
           const score = Math.max(0, 100 - allMetrics.reduce((acc, m) => {
             if (m.severity === 'Mild') return acc + 5;
@@ -152,7 +218,8 @@ export const PoseAnalyzer: React.FC<PoseAnalyzerProps> = ({ images, onAnalysisCo
             actionPlan,
             potentialConditions,
             images,
-            allLandmarks
+            allLandmarks,
+            userInfo
           });
         } else if (isMounted) {
           setError(t.noPerson);

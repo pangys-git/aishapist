@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Camera, History, ShieldCheck, Activity, ChevronRight, Dumbbell, Sparkles, Gamepad2 } from 'lucide-react';
+import { Camera, History, ShieldCheck, Activity, ChevronRight, Dumbbell, Sparkles, Gamepad2, MessageSquare } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 interface HomeProps {
@@ -9,9 +9,10 @@ interface HomeProps {
   onEverythingFitness: () => void;
   onMoMo: () => void;
   onMuscleMaster: () => void;
+  onAIShapistChat: () => void;
 }
 
-export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverythingFitness, onMoMo, onMuscleMaster }) => {
+export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverythingFitness, onMoMo, onMuscleMaster, onAIShapistChat }) => {
   const { t } = useLanguage();
 
   return (
@@ -24,7 +25,7 @@ export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverything
         <div className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-bold uppercase tracking-wider mb-6">
           {t.tagline}
         </div>
-        <h1 className="text-5xl md:text-6xl font-bold text-zinc-900 mb-6 tracking-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-zinc-900 mb-6 tracking-tight">
           {t.appName}
         </h1>
         <p className="text-xl text-zinc-500 max-w-2xl mx-auto leading-relaxed">
@@ -104,6 +105,25 @@ export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverything
             </div>
             <h3 className="text-2xl font-bold mb-2">{(t as any).muscleMaster.title}</h3>
             <p className="text-rose-100 mb-6 line-clamp-2">{(t as any).muscleMaster.desc}</p>
+            <div className="flex items-center text-white font-semibold">
+              {t.getStarted} <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={onAIShapistChat}
+          className="group relative overflow-hidden p-8 rounded-3xl bg-indigo-600 text-white text-left transition-all md:col-span-2"
+        >
+          <div className="relative z-10">
+            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-6">
+              <MessageSquare className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold mb-2">{(t as any).aiShapistChat.title}</h3>
+            <p className="text-indigo-100 mb-6">{(t as any).aiShapistChat.desc}</p>
             <div className="flex items-center text-white font-semibold">
               {t.getStarted} <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
             </div>

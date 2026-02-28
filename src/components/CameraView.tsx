@@ -1,10 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Camera, Upload, X, Check, Info, AlertCircle, RefreshCw } from 'lucide-react';
+import { Camera, Upload, X, Check, Info, AlertCircle, RefreshCw, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { UserInfo } from '../types';
 
 interface CameraViewProps {
-  onAnalyze: (images: { Front?: string; Side?: string; Back?: string }) => void;
+  onAnalyze: (images: { Front?: string; Side?: string; Back?: string }, userInfo?: UserInfo) => void;
   onCancel: () => void;
 }
 
@@ -17,6 +18,8 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onCancel }) =
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showUserInfoForm, setShowUserInfoForm] = useState(false);
+  const [userInfo, setUserInfo] = useState<UserInfo>({});
 
   const startCamera = async () => {
     try {
@@ -93,7 +96,11 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onCancel }) =
     if (count < 3) {
       alert(t.provideAllPhotosWarning);
     }
-    onAnalyze(capturedImages);
+    setShowUserInfoForm(true);
+  };
+
+  const submitAnalysis = () => {
+    onAnalyze(capturedImages, userInfo);
   };
 
   const getViewLabel = (v: string) => {
@@ -104,6 +111,74 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onCancel }) =
       default: return v;
     }
   };
+
+  if (showUserInfoForm) {
+    return (
+      <div className="fixed inset-0 bg-white z-50 flex flex-col">
+        <div className="p-4 border-b border-zinc-100 flex items-center justify-between">
+          <button onClick={() => setShowUserInfoForm(false)} className="p-2 hover:bg-zinc-100 rounded-full transition-colors">
+            <X className="w-6 h-6 text-zinc-500" />
+          </button>
+          <h2 className="text-lg font-bold text-zinc-900">基本資料 (選填)</h2>
+          <div className="w-10" />
+        </div>
+        <div className="flex-1 overflow-y-auto p-6">
+          <p className="text-zinc-500 mb-8">提供以下資料，我們將為您計算 BMI 與腰臀比，讓分析更全面。</p>
+          
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-bold text-zinc-700 mb-2">身高 (cm)</label>
+              <input 
+                type="number" 
+                value={userInfo.height || ''} 
+                onChange={e => setUserInfo({...userInfo, height: e.target.value ? parseFloat(e.target.value) : undefined})}
+                className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                placeholder="例如: 170"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-zinc-700 mb-2">體重 (kg)</label>
+              <input 
+                type="number" 
+                value={userInfo.weight || ''} 
+                onChange={e => setUserInfo({...userInfo, weight: e.target.value ? parseFloat(e.target.value) : undefined})}
+                className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                placeholder="例如: 65"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-zinc-700 mb-2">腰圍 (cm)</label>
+              <input 
+                type="number" 
+                value={userInfo.waist || ''} 
+                onChange={e => setUserInfo({...userInfo, waist: e.target.value ? parseFloat(e.target.value) : undefined})}
+                className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                placeholder="例如: 80"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-zinc-700 mb-2">臀圍 (cm)</label>
+              <input 
+                type="number" 
+                value={userInfo.hip || ''} 
+                onChange={e => setUserInfo({...userInfo, hip: e.target.value ? parseFloat(e.target.value) : undefined})}
+                className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                placeholder="例如: 95"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="p-6 bg-white border-t border-zinc-100">
+          <button 
+            onClick={submitAnalysis}
+            className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-bold transition-colors flex items-center justify-center"
+          >
+            開始分析 <ChevronRight className="w-5 h-5 ml-2" />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">

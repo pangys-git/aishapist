@@ -8,9 +8,10 @@ interface ReportViewProps {
   result: AnalysisResult;
   onClose: () => void;
   onSave: () => void;
+  onConsultAIShapist?: (initialMessage: string) => void;
 }
 
-export const ReportView: React.FC<ReportViewProps> = ({ result, onClose, onSave }) => {
+export const ReportView: React.FC<ReportViewProps> = ({ result, onClose, onSave, onConsultAIShapist }) => {
   const { t, language } = useLanguage();
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   
@@ -241,7 +242,15 @@ export const ReportView: React.FC<ReportViewProps> = ({ result, onClose, onSave 
               )}
             </div>
             {result.actionPlan && result.actionPlan.length > 0 && (
-              <button className="w-full mt-6 py-4 bg-white text-emerald-600 rounded-2xl font-bold hover:bg-emerald-50 transition-colors">
+              <button 
+                onClick={() => {
+                  if (onConsultAIShapist) {
+                    const message = `你好，我剛完成了體態分析，我的綜合評分是 ${result.score}/100。我的主要問題是：\n${result.metrics.filter(m => m.severity !== 'Normal').map(m => `- ${m.name}: ${m.severity}`).join('\n')}\n請問你有什麼運動或飲食建議可以幫助我改善？`;
+                    onConsultAIShapist(message);
+                  }
+                }}
+                className="w-full mt-6 py-4 bg-white text-emerald-600 rounded-2xl font-bold hover:bg-emerald-50 transition-colors"
+              >
                 {t.startRoutine}
               </button>
             )}

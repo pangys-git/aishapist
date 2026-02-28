@@ -38,7 +38,7 @@ export const translations = {
     movementCues: 'Movement Cues',
     actionPlan: 'Recommended Action Plan',
     actionPlanDesc: "Based on your results, we've curated a simple daily routine to help improve your alignment.",
-    startRoutine: 'Start Exercise Routine',
+    startRoutine: 'Consult AI Shapist',
     analysisHistory: 'Analysis History',
     trackProgress: 'Track your posture improvement over time.',
     scoreTrend: 'Score Trend',
@@ -71,6 +71,10 @@ export const translations = {
     reportSaveFailed: 'Failed to save report.',
     everythingFitness: 'Everything Fitness',
     everythingFitnessDesc: 'Turn your surroundings into a gym. Take a photo of your environment and get exercise suggestions.',
+    aiShapistChat: {
+      title: 'AI Shapist Chat',
+      desc: '"AI Shapist — The Trinity Intelligent Posture Management Expert" Integrating fitness, physiotherapy, and nutrition, AI Shapist creates personalized exercise and diet plans for you through real-time dialogue. From posture optimization to early warning medical advice, we make health management smarter and safer.'
+    },
     momo: {
       title: 'MoMo',
       tagline: 'Gluteal Amnesia Reboot',
@@ -410,7 +414,7 @@ export const translations = {
     movementCues: '動作提示',
     actionPlan: '推薦行動計劃',
     actionPlanDesc: '根據您的結果，我們為您準備了簡單的日常練習，幫助改善您的體態。',
-    startRoutine: '開始運動練習',
+    startRoutine: '請教AI形養師',
     analysisHistory: '分析歷史',
     trackProgress: '追蹤您的體態改善進度。',
     scoreTrend: '評分趨勢',
@@ -443,6 +447,10 @@ export const translations = {
     reportSaveFailed: '儲存報告失敗。',
     everythingFitness: 'Everything Fitness',
     everythingFitnessDesc: '利用智能電話拍攝辦公室或家居四周環境，以 AI 生成選擇適合的家居用品，並建議相應鍛鍊肌肉的運動。',
+    aiShapistChat: {
+      title: 'AI形養師',
+      desc: '「AI形養師——三位一體的智能體態管理專家」融合健身、物治、營養三大領域，AI形養師透過即時對話，為您打造專屬的運動與飲食計畫。從體態優化到預警就醫建議，我們讓健康管理變得更聰明、更安全。'
+    },
     momo: {
       title: 'MoMo 微運動',
       tagline: '重啟臀肌與對抗久坐',
