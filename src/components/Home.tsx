@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Camera, History, ShieldCheck, Activity, ChevronRight, Dumbbell, Sparkles, Gamepad2, MessageSquare } from 'lucide-react';
+import { Camera, History, ShieldCheck, Activity, ChevronRight, Dumbbell, Sparkles, Gamepad2, MessageSquare, ClipboardCheck } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 interface HomeProps {
@@ -10,10 +10,12 @@ interface HomeProps {
   onMoMo: () => void;
   onMuscleMaster: () => void;
   onAIShapistChat: () => void;
+  onSarcopeniaScreening: () => void;
 }
 
-export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverythingFitness, onMoMo, onMuscleMaster, onAIShapistChat }) => {
+export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverythingFitness, onMoMo, onMuscleMaster, onAIShapistChat, onSarcopeniaScreening }) => {
   const { t } = useLanguage();
+  const ssData = (t as any).sarcopeniaScreening;
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
@@ -25,7 +27,7 @@ export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverything
         <div className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-bold uppercase tracking-wider mb-6">
           {t.tagline}
         </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-zinc-900 mb-6 tracking-tight">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-zinc-900 mb-6 tracking-tight">
           {t.appName}
         </h1>
         <p className="text-xl text-zinc-500 max-w-2xl mx-auto leading-relaxed">
@@ -34,6 +36,25 @@ export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverything
       </motion.div>
 
       <div className="grid md:grid-cols-2 gap-6 mb-6">
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={onSarcopeniaScreening}
+          className="group relative overflow-hidden p-8 rounded-3xl bg-blue-600 text-white text-left transition-all md:col-span-2"
+        >
+          <div className="relative z-10">
+            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-6">
+              <ClipboardCheck className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold mb-2">{ssData.title}</h3>
+            <p className="text-blue-100 mb-6 line-clamp-2">{ssData.desc}</p>
+            <div className="flex items-center text-white font-semibold">
+              {t.getStarted} <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
+        </motion.button>
+
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -56,15 +77,15 @@ export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverything
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={onMoMo}
-          className="group relative overflow-hidden p-8 rounded-3xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white text-left transition-all"
+          onClick={onAIShapistChat}
+          className="group relative overflow-hidden p-8 rounded-3xl bg-indigo-600 text-white text-left transition-all"
         >
           <div className="relative z-10">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-6 backdrop-blur-sm">
-              <Sparkles className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-6">
+              <MessageSquare className="w-6 h-6 text-white" />
             </div>
-            <h3 className="text-2xl font-bold mb-2">{(t as any).momo.title}</h3>
-            <p className="text-emerald-100 mb-6 line-clamp-2">{(t as any).momo.desc}</p>
+            <h3 className="text-2xl font-bold mb-2">{(t as any).aiShapistChat.title}</h3>
+            <p className="text-indigo-100 mb-6 line-clamp-2">{(t as any).aiShapistChat.desc}</p>
             <div className="flex items-center text-white font-semibold">
               {t.getStarted} <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
             </div>
@@ -77,15 +98,15 @@ export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverything
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={onEverythingFitness}
-          className="group relative overflow-hidden p-8 rounded-3xl bg-emerald-600 text-white text-left transition-all"
+          onClick={onMoMo}
+          className="group relative overflow-hidden p-8 rounded-3xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white text-left transition-all"
         >
           <div className="relative z-10">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-6">
-              <Dumbbell className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-6 backdrop-blur-sm">
+              <Sparkles className="w-6 h-6 text-white" />
             </div>
-            <h3 className="text-2xl font-bold mb-2">{t.everythingFitness}</h3>
-            <p className="text-emerald-100 mb-6">{t.everythingFitnessDesc}</p>
+            <h3 className="text-2xl font-bold mb-2">{(t as any).momo.title}</h3>
+            <p className="text-emerald-100 mb-6 line-clamp-2">{(t as any).momo.desc}</p>
             <div className="flex items-center text-white font-semibold">
               {t.getStarted} <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
             </div>
@@ -115,15 +136,15 @@ export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverything
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={onAIShapistChat}
-          className="group relative overflow-hidden p-8 rounded-3xl bg-indigo-600 text-white text-left transition-all md:col-span-2"
+          onClick={onEverythingFitness}
+          className="group relative overflow-hidden p-8 rounded-3xl bg-emerald-600 text-white text-left transition-all"
         >
           <div className="relative z-10">
             <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-6">
-              <MessageSquare className="w-6 h-6 text-white" />
+              <Dumbbell className="w-6 h-6 text-white" />
             </div>
-            <h3 className="text-2xl font-bold mb-2">{(t as any).aiShapistChat.title}</h3>
-            <p className="text-indigo-100 mb-6">{(t as any).aiShapistChat.desc}</p>
+            <h3 className="text-2xl font-bold mb-2">{t.everythingFitness}</h3>
+            <p className="text-emerald-100 mb-6 line-clamp-2">{t.everythingFitnessDesc}</p>
             <div className="flex items-center text-white font-semibold">
               {t.getStarted} <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
             </div>
@@ -135,7 +156,7 @@ export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverything
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onViewHistory}
-          className="group p-8 rounded-3xl bg-white border border-zinc-200 text-left transition-all hover:border-zinc-300 md:col-span-2"
+          className="group p-8 rounded-3xl bg-white border border-zinc-200 text-left transition-all hover:border-zinc-300"
         >
           <div className="w-12 h-12 rounded-2xl bg-zinc-100 flex items-center justify-center mb-6">
             <History className="w-6 h-6 text-zinc-900" />

@@ -1,5 +1,5 @@
 {
-  "name": "AI Shapist",
-  "description": "Professional-grade AI posture analysis and musculoskeletal health assessment. Works offline.",
-  "requestFramePermissions": ["camera"]
+  "name": "Muscle or Never",
+  "description": "肌不可失-股具肌: 預防長者肌肉流失的智能體態管理與運動專家。",
+  "requestFramePermissions": ["camera", "microphone", "geolocation"]
 }

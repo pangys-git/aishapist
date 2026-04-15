@@ -26,6 +26,13 @@ export interface UserInfo {
   hip?: number; // cm
 }
 
+export interface SarcopeniaScreeningResult {
+  sarcfScore: number;
+  sarcfAnswers: number[];
+  chairStandTime: number | null;
+  date: string;
+}
+
 export interface AnalysisResult {
   id: string;
   date: string;
@@ -39,6 +46,7 @@ export interface AnalysisResult {
   images?: { Front?: string; Side?: string; Back?: string };
   allLandmarks?: { Front?: Landmark[]; Side?: Landmark[]; Back?: Landmark[] };
   userInfo?: UserInfo;
+  sarcopeniaScreening?: SarcopeniaScreeningResult;
 }
 
 export interface UserPlan {

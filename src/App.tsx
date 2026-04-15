@@ -15,14 +15,15 @@ import { EverythingFitnessReport } from './components/EverythingFitnessReport';
 import { MoMoView } from './components/MoMoView';
 import { MuscleMasterView } from './components/MuscleMasterView';
 import { AIShapistChat } from './components/AIShapistChat';
-import { AnalysisResult, EverythingFitnessResult, UserInfo } from './types';
+import { SarcopeniaScreeningView } from './components/SarcopeniaScreeningView';
+import { AnalysisResult, EverythingFitnessResult, UserInfo, SarcopeniaScreeningResult } from './types';
 import { AnimatePresence, motion } from 'motion/react';
 import { Languages } from 'lucide-react';
 
 import { storageService } from './services/storage';
 import { useLanguage } from './context/LanguageContext';
 
-type AppState = 'HOME' | 'CAPTURE' | 'ANALYZING' | 'REPORT' | 'HISTORY' | 'EVERYTHING_FITNESS_CAPTURE' | 'EVERYTHING_FITNESS_ANALYZING' | 'EVERYTHING_FITNESS_REPORT' | 'MOMO' | 'MUSCLE_MASTER' | 'AI_SHAPIST_CHAT';
+type AppState = 'HOME' | 'CAPTURE' | 'ANALYZING' | 'REPORT' | 'HISTORY' | 'EVERYTHING_FITNESS_CAPTURE' | 'EVERYTHING_FITNESS_ANALYZING' | 'EVERYTHING_FITNESS_REPORT' | 'MOMO' | 'MUSCLE_MASTER' | 'AI_SHAPIST_CHAT' | 'SARCOPENIA_SCREENING';
 
 export default function App() {
   const { t, language, setLanguage } = useLanguage();
@@ -31,8 +32,10 @@ export default function App() {
   const [currentResult, setCurrentResult] = useState<AnalysisResult | null>(null);
   const [everythingFitnessResult, setEverythingFitnessResult] = useState<EverythingFitnessResult | null>(null);
   const [initialChatMessage, setInitialChatMessage] = useState<string>('');
+  const [aiShapistContext, setAiShapistContext] = useState<string>('');
 
   const [currentUserInfo, setCurrentUserInfo] = useState<UserInfo | undefined>(undefined);
+  const [currentSarcopeniaResult, setCurrentSarcopeniaResult] = useState<SarcopeniaScreeningResult | undefined>(undefined);
 
   const handleAnalyze = (images: { Front?: string; Side?: string; Back?: string }, userInfo?: UserInfo) => {
     setCurrentImages(images);
@@ -99,6 +102,7 @@ export default function App() {
               onMoMo={() => setState('MOMO')}
               onMuscleMaster={() => setState('MUSCLE_MASTER')}
               onAIShapistChat={() => setState('AI_SHAPIST_CHAT')}
+              onSarcopeniaScreening={() => setState('SARCOPENIA_SCREENING')}
             />
           </motion.div>
         )}
@@ -142,6 +146,7 @@ export default function App() {
             <PoseAnalyzer 
               images={currentImages} 
               userInfo={currentUserInfo}
+              sarcopeniaScreening={currentSarcopeniaResult}
               onAnalysisComplete={handleAnalysisComplete} 
             />
           </motion.div>
@@ -157,6 +162,8 @@ export default function App() {
           >
             <EverythingFitnessAnalyzer 
               imageSrc={currentImages.Front} 
+              postureResult={currentResult}
+              aiShapistContext={aiShapistContext}
               onAnalysisComplete={handleEverythingFitnessAnalysisComplete} 
               onCancel={() => setState('HOME')}
             />
@@ -248,6 +255,23 @@ export default function App() {
                 setInitialChatMessage('');
               }} 
               initialMessage={initialChatMessage}
+              onUpdateContext={setAiShapistContext}
+            />
+          </motion.div>
+        )}
+        {state === 'SARCOPENIA_SCREENING' && (
+          <motion.div
+            key="sarcopenia_screening"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <SarcopeniaScreeningView 
+              onBack={() => setState('HOME')} 
+              onComplete={(result) => {
+                setCurrentSarcopeniaResult(result);
+                setState('CAPTURE');
+              }}
             />
           </motion.div>
         )}

@@ -23,19 +23,48 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onCancel }) =
 
   const startCamera = async () => {
     try {
+      setError(null);
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
-      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } } 
-      });
+      
+      console.log("CameraView: Requesting camera with constraints:", { facingMode });
+      
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('您的瀏覽器不支援相機功能。請更換瀏覽器。');
+      }
+
+      let mediaStream: MediaStream;
+      try {
+        // Try with ideal constraints first
+        mediaStream = await navigator.mediaDevices.getUserMedia({ 
+          video: { 
+            facingMode: { ideal: facingMode }, 
+            width: { ideal: 1280 }, 
+            height: { ideal: 720 } 
+          } 
+        });
+      } catch (e) {
+        console.warn("CameraView: Ideal constraints failed, falling back to basic video:", e);
+        // Fallback to basic video
+        mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      }
+      
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
       }
-      setError(null);
-    } catch (err) {
-      setError('Could not access camera. Please check permissions.');
+    } catch (err: any) {
+      console.error("CameraView: Camera access error:", err);
+      let msg = '無法存取相機。請檢查權限設定。';
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        msg = '相機權限被拒絕。請在瀏覽器網址列左側允許相機權限，然後點擊「重試」。';
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        msg = '找不到相機設備。請確保相機已連接。';
+      } else if (err.message) {
+        msg = err.message;
+      }
+      setError(msg);
     }
   };
 
@@ -113,57 +142,58 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onCancel }) =
   };
 
   if (showUserInfoForm) {
+    const ui = (t as any).userInfoForm;
     return (
       <div className="fixed inset-0 bg-white z-50 flex flex-col">
         <div className="p-4 border-b border-zinc-100 flex items-center justify-between">
           <button onClick={() => setShowUserInfoForm(false)} className="p-2 hover:bg-zinc-100 rounded-full transition-colors">
             <X className="w-6 h-6 text-zinc-500" />
           </button>
-          <h2 className="text-lg font-bold text-zinc-900">基本資料 (選填)</h2>
+          <h2 className="text-lg font-bold text-zinc-900">{ui.title}</h2>
           <div className="w-10" />
         </div>
         <div className="flex-1 overflow-y-auto p-6">
-          <p className="text-zinc-500 mb-8">提供以下資料，我們將為您計算 BMI 與腰臀比，讓分析更全面。</p>
+          <p className="text-zinc-500 mb-8">{ui.desc}</p>
           
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-bold text-zinc-700 mb-2">身高 (cm)</label>
+              <label className="block text-sm font-bold text-zinc-700 mb-2">{ui.height}</label>
               <input 
                 type="number" 
                 value={userInfo.height || ''} 
                 onChange={e => setUserInfo({...userInfo, height: e.target.value ? parseFloat(e.target.value) : undefined})}
                 className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
-                placeholder="例如: 170"
+                placeholder={`${ui.placeholder}170`}
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-zinc-700 mb-2">體重 (kg)</label>
+              <label className="block text-sm font-bold text-zinc-700 mb-2">{ui.weight}</label>
               <input 
                 type="number" 
                 value={userInfo.weight || ''} 
                 onChange={e => setUserInfo({...userInfo, weight: e.target.value ? parseFloat(e.target.value) : undefined})}
                 className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
-                placeholder="例如: 65"
+                placeholder={`${ui.placeholder}65`}
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-zinc-700 mb-2">腰圍 (cm)</label>
+              <label className="block text-sm font-bold text-zinc-700 mb-2">{ui.waist}</label>
               <input 
                 type="number" 
                 value={userInfo.waist || ''} 
                 onChange={e => setUserInfo({...userInfo, waist: e.target.value ? parseFloat(e.target.value) : undefined})}
                 className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
-                placeholder="例如: 80"
+                placeholder={`${ui.placeholder}80`}
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-zinc-700 mb-2">臀圍 (cm)</label>
+              <label className="block text-sm font-bold text-zinc-700 mb-2">{ui.hip}</label>
               <input 
                 type="number" 
                 value={userInfo.hip || ''} 
                 onChange={e => setUserInfo({...userInfo, hip: e.target.value ? parseFloat(e.target.value) : undefined})}
                 className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
-                placeholder="例如: 95"
+                placeholder={`${ui.placeholder}95`}
               />
             </div>
           </div>
@@ -173,7 +203,7 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onCancel }) =
             onClick={submitAnalysis}
             className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-bold transition-colors flex items-center justify-center"
           >
-            開始分析 <ChevronRight className="w-5 h-5 ml-2" />
+            {ui.startAnalysis} <ChevronRight className="w-5 h-5 ml-2" />
           </button>
         </div>
       </div>
@@ -239,9 +269,19 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onCancel }) =
               <Camera className="w-10 h-10 text-zinc-500" />
             </div>
             <h3 className="text-xl font-bold text-white mb-2">{t.captureReady}</h3>
-            <p className="text-zinc-500 mb-8 max-w-xs mx-auto">
+            <p className="text-zinc-500 mb-6 max-w-xs mx-auto">
               {t.captureDesc}
             </p>
+
+            <div className="bg-zinc-800/50 p-4 rounded-2xl mb-8 text-left max-w-xs mx-auto">
+              <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">電腦版提示：</h4>
+              <ul className="text-[10px] text-zinc-500 space-y-1 list-disc pl-4">
+                <li>請確保電腦已連接網路攝影機。</li>
+                <li>若無法開啟，請檢查網址列左側是否已允許相機權限。</li>
+                <li>建議使用 Chrome 或 Edge 瀏覽器。</li>
+              </ul>
+            </div>
+
             <div className="flex space-x-4">
               <button 
                 onClick={startCamera}
@@ -267,9 +307,17 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onCancel }) =
         )}
 
         {error && (
-          <div className="absolute top-4 left-4 right-4 bg-red-500 text-white p-4 rounded-2xl flex items-center shadow-lg">
-            <AlertCircle className="w-5 h-5 mr-2" />
-            <p className="text-sm font-medium">{error}</p>
+          <div className="absolute top-4 left-4 right-4 bg-red-500 text-white p-4 rounded-2xl flex items-center justify-between shadow-lg z-30">
+            <div className="flex items-center">
+              <AlertCircle className="w-5 h-5 mr-2 shrink-0" />
+              <p className="text-xs font-medium">{error}</p>
+            </div>
+            <button 
+              onClick={startCamera}
+              className="ml-4 px-3 py-1 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-bold transition-colors whitespace-nowrap"
+            >
+              重試
+            </button>
           </div>
         )}
       </div>

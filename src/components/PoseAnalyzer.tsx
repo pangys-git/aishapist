@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FilesetResolver, PoseLandmarker } from '@mediapipe/tasks-vision';
-import { AnalysisResult, Landmark, Exercise, PostureMetric, UserInfo } from '../types';
+import { AnalysisResult, Landmark, Exercise, PostureMetric, UserInfo, SarcopeniaScreeningResult } from '../types';
 import { analyzePosture } from '../utils/poseUtils';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../constants/translations';
@@ -8,10 +8,11 @@ import { translations } from '../constants/translations';
 interface PoseAnalyzerProps {
   images: { Front?: string; Side?: string; Back?: string };
   userInfo?: UserInfo;
+  sarcopeniaScreening?: SarcopeniaScreeningResult;
   onAnalysisComplete: (result: AnalysisResult) => void;
 }
 
-export const PoseAnalyzer: React.FC<PoseAnalyzerProps> = ({ images, userInfo, onAnalysisComplete }) => {
+export const PoseAnalyzer: React.FC<PoseAnalyzerProps> = ({ images, userInfo, sarcopeniaScreening, onAnalysisComplete }) => {
   const { t, language } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,24 +22,49 @@ export const PoseAnalyzer: React.FC<PoseAnalyzerProps> = ({ images, userInfo, on
     let isMounted = true;
 
     const initLandmarker = async () => {
+      console.log("PoseAnalyzer: Starting initialization...");
+      const timeoutId = setTimeout(() => {
+        if (loading && !error) {
+          setError(language === 'en' ? "Initialization timed out. Please check your connection." : "初始化超時，請檢查網絡連接。");
+        }
+      }, 30000); // 30 second timeout
+
       try {
         const vision = await FilesetResolver.forVisionTasks(
-          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.9/wasm"
         );
+        console.log("PoseAnalyzer: FilesetResolver loaded");
         
-        landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
-          baseOptions: {
-            modelAssetPath: `https://storage.googleapis.com/mediapipe-tasks/pose_landmarker/pose_landmarker_full.task`,
-            delegate: "GPU"
-          },
-          runningMode: "IMAGE",
-          numPoses: 1,
-          // Lower thresholds as requested
-          minPoseDetectionConfidence: 0.3,
-          minPosePresenceConfidence: 0.3,
-          minTrackingConfidence: 0.3
-        });
+        try {
+          landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
+            baseOptions: {
+              modelAssetPath: `https://storage.googleapis.com/mediapipe-tasks/pose_landmarker/pose_landmarker_full.task`,
+              delegate: "GPU"
+            },
+            runningMode: "IMAGE",
+            numPoses: 1,
+            minPoseDetectionConfidence: 0.3,
+            minPosePresenceConfidence: 0.3,
+            minTrackingConfidence: 0.3
+          });
+          console.log("PoseAnalyzer: PoseLandmarker created with GPU");
+        } catch (gpuErr) {
+          console.warn("PoseAnalyzer: GPU initialization failed, falling back to CPU", gpuErr);
+          landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
+            baseOptions: {
+              modelAssetPath: `https://storage.googleapis.com/mediapipe-tasks/pose_landmarker/pose_landmarker_full.task`,
+              delegate: "CPU"
+            },
+            runningMode: "IMAGE",
+            numPoses: 1,
+            minPoseDetectionConfidence: 0.3,
+            minPosePresenceConfidence: 0.3,
+            minTrackingConfidence: 0.3
+          });
+          console.log("PoseAnalyzer: PoseLandmarker created with CPU");
+        }
 
+        clearTimeout(timeoutId);
         if (!isMounted) return;
 
         const allMetrics: PostureMetric[] = [];
@@ -48,23 +74,22 @@ export const PoseAnalyzer: React.FC<PoseAnalyzerProps> = ({ images, userInfo, on
         let firstView: 'Front' | 'Side' | 'Back' | 'Combined' = 'Combined';
 
         const viewsToProcess = (['Front', 'Side', 'Back'] as const).filter(v => images[v]);
+        console.log("PoseAnalyzer: Processing views:", viewsToProcess);
 
         for (const v of viewsToProcess) {
+          console.log(`PoseAnalyzer: Processing view ${v}...`);
           const imgUrl = images[v]!;
           
-          // Load image and handle rotation/resizing
           const response = await fetch(imgUrl);
           const blob = await response.blob();
           
-          // Use createImageBitmap to handle EXIF orientation automatically
           const imageBitmap = await createImageBitmap(blob, { 
             imageOrientation: 'from-image' 
           });
 
           if (!landmarkerRef.current || !isMounted) return;
 
-          // Resize image to avoid OOM and improve performance
-          const MAX_DIM = 1024; // Slightly smaller for better mobile performance
+          const MAX_DIM = 1024;
           let width = imageBitmap.width;
           let height = imageBitmap.height;
           
@@ -84,19 +109,17 @@ export const PoseAnalyzer: React.FC<PoseAnalyzerProps> = ({ images, userInfo, on
           const ctx = canvas.getContext('2d');
           if (!ctx) throw new Error("Could not get canvas context");
           
-          // Draw resized and oriented image to canvas
           ctx.drawImage(imageBitmap, 0, 0, width, height);
           
-          // Call detect() synchronously as requested
           const result = landmarkerRef.current.detect(canvas);
+          console.log(`PoseAnalyzer: Detection result for ${v}:`, result.landmarks?.length > 0 ? "Found" : "Not found");
 
           if (result.landmarks && result.landmarks.length > 0 && isMounted) {
-            // MediaPipe landmarks are already normalized 0-1
             const landmarks: Landmark[] = result.landmarks[0].map(l => ({
               x: l.x,
               y: l.y,
               z: l.z,
-              visibility: l.visibility || 0.5 // MediaPipe visibility
+              visibility: l.visibility || 0.5
             }));
 
             allLandmarks[v] = landmarks;
@@ -111,6 +134,8 @@ export const PoseAnalyzer: React.FC<PoseAnalyzerProps> = ({ images, userInfo, on
             allMetrics.push(...metrics);
           }
         }
+
+        console.log("PoseAnalyzer: All views processed. Metrics count:", allMetrics.length);
 
         if (userInfo) {
           if (userInfo.height && userInfo.weight) {
@@ -177,6 +202,45 @@ export const PoseAnalyzer: React.FC<PoseAnalyzerProps> = ({ images, userInfo, on
           }
         }
 
+        if (sarcopeniaScreening) {
+          // Add SARC-F Metric
+          const sarcfSeverity: 'Normal' | 'Mild' | 'Moderate' | 'Severe' = sarcopeniaScreening.sarcfScore >= 4 ? 'Severe' : 'Normal';
+          allMetrics.push({
+            key: 'sarcf',
+            name: language === 'en' ? 'SARC-F Score' : 'SARC-F 問卷得分',
+            value: sarcopeniaScreening.sarcfScore,
+            unit: '/ 10',
+            severity: sarcfSeverity,
+            description: language === 'en' ? 'Clinical screening for sarcopenia risk' : '肌少症風險臨床篩查',
+            recommendation: sarcfSeverity === 'Severe' 
+              ? (language === 'en' ? 'High risk. Consult a healthcare professional.' : '高風險。建議諮詢醫療專業人士。')
+              : (language === 'en' ? 'Low risk. Maintain activity.' : '低風險。請保持活動。'),
+            cues: []
+          });
+
+          // Add Chair Stand Metric
+          if (sarcopeniaScreening.chairStandTime !== null) {
+            const time = sarcopeniaScreening.chairStandTime;
+            let csSeverity: 'Normal' | 'Mild' | 'Moderate' | 'Severe' = 'Normal';
+            if (time >= 15) csSeverity = 'Severe';
+            else if (time >= 12) csSeverity = 'Moderate';
+            else if (time >= 10) csSeverity = 'Mild';
+
+            allMetrics.push({
+              key: 'chairstand',
+              name: language === 'en' ? '5-Times Chair Stand' : '五次坐下站起測試',
+              value: parseFloat(time.toFixed(1)),
+              unit: 's',
+              severity: csSeverity,
+              description: language === 'en' ? 'Measures lower body strength' : '評估下肢肌力',
+              recommendation: csSeverity === 'Normal' 
+                ? (language === 'en' ? 'Good strength.' : '肌力良好。')
+                : (language === 'en' ? 'Consider leg strengthening exercises.' : '建議加強腿部肌肉訓練。'),
+              cues: []
+            });
+          }
+        }
+
         if (allMetrics.length > 0 && isMounted) {
           const score = Math.max(0, 100 - allMetrics.reduce((acc, m) => {
             if (m.severity === 'Mild') return acc + 5;
@@ -219,18 +283,27 @@ export const PoseAnalyzer: React.FC<PoseAnalyzerProps> = ({ images, userInfo, on
             potentialConditions,
             images,
             allLandmarks,
-            userInfo
+            userInfo,
+            sarcopeniaScreening
           });
         } else if (isMounted) {
           setError(t.noPerson);
         }
       } catch (err) {
         console.error("Analysis error:", err);
+        clearTimeout(timeoutId);
         if (isMounted) setError(t.failAnalyze);
       } finally {
+        clearTimeout(timeoutId);
         if (isMounted) setLoading(false);
       }
     };
+
+    if (Object.keys(images).length === 0 && !sarcopeniaScreening) {
+      setError(t.noPerson);
+      setLoading(false);
+      return;
+    }
 
     initLandmarker();
 
@@ -240,7 +313,7 @@ export const PoseAnalyzer: React.FC<PoseAnalyzerProps> = ({ images, userInfo, on
         landmarkerRef.current.close();
       }
     };
-  }, [images, onAnalysisComplete, t, language]);
+  }, [images, onAnalysisComplete, t, language, sarcopeniaScreening]);
 
   return (
     <div className="flex flex-col items-center justify-center p-8 space-y-4">

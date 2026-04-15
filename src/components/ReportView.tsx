@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { CheckCircle2, AlertTriangle, XCircle, Share2, Download, ChevronRight, Activity, Info, Copy, Check, Search } from 'lucide-react';
+import { ClipboardCheck, CheckCircle2, AlertTriangle, XCircle, Share2, Download, ChevronRight, Activity, Info, Copy, Check, Search, Timer } from 'lucide-react';
 import { AnalysisResult, PostureMetric } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -133,6 +133,33 @@ export const ReportView: React.FC<ReportViewProps> = ({ result, onClose, onSave,
               {result.score > 80 ? t.excellentAlignment : t.needsImprovement}
             </p>
           </div>
+
+          {result.sarcopeniaScreening && (
+            <div className="p-6 rounded-3xl bg-blue-50 border border-blue-100">
+              <h4 className="font-bold text-blue-900 mb-4 flex items-center">
+                <ClipboardCheck className="w-5 h-5 mr-2 text-blue-500" /> 肌少症篩查摘要
+              </h4>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-blue-700">SARC-F 問卷得分</span>
+                  <span className={`text-sm font-bold ${result.sarcopeniaScreening.sarcfScore >= 4 ? 'text-red-600' : 'text-emerald-600'}`}>
+                    {result.sarcopeniaScreening.sarcfScore} / 10
+                  </span>
+                </div>
+                {result.sarcopeniaScreening.chairStandTime && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-blue-700">五次坐下站起時間</span>
+                    <span className={`text-sm font-bold ${result.sarcopeniaScreening.chairStandTime >= 15 ? 'text-red-600' : 'text-emerald-600'}`}>
+                      {result.sarcopeniaScreening.chairStandTime.toFixed(1)} 秒
+                    </span>
+                  </div>
+                )}
+                <p className="text-xs text-blue-600 italic">
+                  * 結合體態分析，您的下肢肌力與姿勢對稱性是評估肌少症的關鍵指標。
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Column: Metrics & Recommendations */}

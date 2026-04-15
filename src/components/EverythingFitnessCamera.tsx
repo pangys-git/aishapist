@@ -18,19 +18,48 @@ export const EverythingFitnessCamera: React.FC<EverythingFitnessCameraProps> = (
 
   const startCamera = async () => {
     try {
+      setError(null);
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
-      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } } 
-      });
+      
+      console.log("EverythingFitnessCamera: Requesting camera with constraints:", { facingMode });
+      
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('您的瀏覽器不支援相機功能。請更換瀏覽器。');
+      }
+
+      let mediaStream: MediaStream;
+      try {
+        // Try with ideal constraints first
+        mediaStream = await navigator.mediaDevices.getUserMedia({ 
+          video: { 
+            facingMode: { ideal: facingMode }, 
+            width: { ideal: 1280 }, 
+            height: { ideal: 720 } 
+          } 
+        });
+      } catch (e) {
+        console.warn("EverythingFitnessCamera: Ideal constraints failed, falling back to basic video:", e);
+        // Fallback to basic video
+        mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      }
+      
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
       }
-      setError(null);
-    } catch (err) {
-      setError('Could not access camera. Please check permissions.');
+    } catch (err: any) {
+      console.error("EverythingFitnessCamera: Camera access error:", err);
+      let msg = '無法存取相機。請檢查權限設定。';
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError' || err.message?.includes('Permission denied')) {
+        msg = '相機權限被拒絕。請在瀏覽器網址列左側允許相機權限，然後點擊「重試」。';
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        msg = '找不到相機設備。請確保相機已連接。';
+      } else if (err.message) {
+        msg = err.message;
+      }
+      setError(msg);
     }
   };
 
@@ -105,9 +134,19 @@ export const EverythingFitnessCamera: React.FC<EverythingFitnessCameraProps> = (
               <Camera className="w-10 h-10 text-zinc-500" />
             </div>
             <h3 className="text-xl font-bold text-white mb-2">{t.captureReady}</h3>
-            <p className="text-zinc-500 mb-8 max-w-xs mx-auto">
+            <p className="text-zinc-500 mb-6 max-w-xs mx-auto">
               {t.everythingFitnessDesc}
             </p>
+
+            <div className="bg-zinc-800/50 p-4 rounded-2xl mb-8 text-left max-w-xs mx-auto">
+              <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">電腦版提示：</h4>
+              <ul className="text-[10px] text-zinc-500 space-y-1 list-disc pl-4">
+                <li>請確保電腦已連接網路攝影機。</li>
+                <li>若無法開啟，請檢查網址列左側是否已允許相機權限。</li>
+                <li>建議使用 Chrome 或 Edge 瀏覽器。</li>
+              </ul>
+            </div>
+
             <div className="space-y-4">
               <button 
                 onClick={startCamera}
@@ -133,9 +172,17 @@ export const EverythingFitnessCamera: React.FC<EverythingFitnessCameraProps> = (
         )}
 
         {error && (
-          <div className="absolute top-4 left-4 right-4 bg-red-500 text-white p-4 rounded-2xl flex items-center shadow-lg">
-            <AlertCircle className="w-5 h-5 mr-2" />
-            <p className="text-sm font-medium">{error}</p>
+          <div className="absolute top-4 left-4 right-4 bg-red-500 text-white p-4 rounded-2xl flex items-center justify-between shadow-lg z-30">
+            <div className="flex items-center">
+              <AlertCircle className="w-5 h-5 mr-2 shrink-0" />
+              <p className="text-xs font-medium">{error}</p>
+            </div>
+            <button 
+              onClick={startCamera}
+              className="ml-4 px-3 py-1 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-bold transition-colors whitespace-nowrap"
+            >
+              重試
+            </button>
           </div>
         )}
       </div>

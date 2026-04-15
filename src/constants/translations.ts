@@ -2,15 +2,25 @@ export type Language = 'en' | 'zh';
 
 export const translations = {
   en: {
-    appName: 'AI Shapist',
-    tagline: 'AI-Powered Posture Analysis',
-    description: 'Professional-grade body alignment assessment from a single photo. Identify imbalances and get personalized corrective guidance.',
-    newAnalysis: 'New Analysis',
-    newAnalysisDesc: 'Start a fresh posture assessment using your camera or photo library.',
-    history: 'History',
-    historyDesc: 'Review your past reports and track your progress over time.',
+    appName: 'Muscle or Never',
+    tagline: 'Elderly Sarcopenia Prevention',
+    description: 'Intelligent posture management and exercise expert dedicated to preventing muscle loss in seniors. Stay strong, stay independent.',
+    newAnalysis: 'Posture Check',
+    newAnalysisDesc: 'Assess your posture and muscle health using your camera.',
+    history: 'My Progress',
+    historyDesc: 'Track your muscle strength and posture improvements over time.',
     getStarted: 'Get Started',
     viewRecords: 'View Records',
+    userInfoForm: {
+      title: 'Basic Info (Optional)',
+      desc: 'Provide the following info to calculate BMI and WHR for a more comprehensive analysis.',
+      height: 'Height (cm)',
+      weight: 'Weight (kg)',
+      waist: 'Waist (cm)',
+      hip: 'Hip (cm)',
+      placeholder: 'e.g. ',
+      startAnalysis: 'Start Analysis'
+    },
     privacyFirst: 'Privacy First',
     privacyFirstDesc: 'Analysis is performed locally. Your photos never leave your device.',
     medicalGrade: 'Medical Grade',
@@ -71,14 +81,49 @@ export const translations = {
     reportSaveFailed: 'Failed to save report.',
     everythingFitness: 'Everything Fitness',
     everythingFitnessDesc: 'Turn your surroundings into a gym. Take a photo of your environment and get exercise suggestions.',
+    sarcopeniaScreening: {
+      title: 'Sarcopenia Screening',
+      tagline: 'Clinical Assessment',
+      desc: 'Screen for muscle loss risk using the SARC-F questionnaire and 5-Times Chair Stand Test.',
+      sarcf: {
+        title: 'SARC-F Questionnaire',
+        desc: 'A simple clinical screening tool for sarcopenia risk.',
+        questions: [
+          { q: 'Strength: How much difficulty do you have in lifting and carrying 10 pounds?', options: ['None', 'Some', 'A lot or unable'] },
+          { q: 'Assistance in walking: How much difficulty do you have walking across a room?', options: ['None', 'Some', 'A lot, use aids, or unable'] },
+          { q: 'Rise from a chair: How much difficulty do you have rising from a chair?', options: ['None', 'Some', 'A lot or unable without help'] },
+          { q: 'Climb stairs: How much difficulty do you have climbing a flight of 10 stairs?', options: ['None', 'Some', 'A lot or unable'] },
+          { q: 'Falls: How many times have you fallen in the past year?', options: ['None', '1-3 falls', '4 or more falls'] }
+        ],
+        result: 'SARC-F Score',
+        interpretation: {
+          low: 'Low risk of sarcopenia. Keep exercising!',
+          high: 'High risk of sarcopenia. We recommend consulting a healthcare professional.'
+        }
+      },
+      chairStand: {
+        title: '5-Times Chair Stand Test',
+        desc: 'Measures lower body strength and power. Time how long it takes to stand up and sit down 5 times.',
+        instructions: 'Sit on a sturdy chair with arms crossed over your chest. Click start and stand up fully 5 times as fast as you can.',
+        start: 'Start Timer',
+        stop: 'I Finished!',
+        result: 'Time Taken',
+        seconds: 'seconds',
+        interpretation: {
+          excellent: 'Excellent lower body strength!',
+          normal: 'Normal for your age group.',
+          slow: 'Slower than average. Focus on leg strengthening exercises.'
+        }
+      }
+    },
     aiShapistChat: {
-      title: 'AI Shapist Chat',
-      desc: '"AI Shapist — The Trinity Intelligent Posture Management Expert" Integrating fitness, physiotherapy, and nutrition, AI Shapist creates personalized exercise and diet plans for you through real-time dialogue. From posture optimization to early warning medical advice, we make health management smarter and safer.'
+      title: 'AI Muscle Expert',
+      desc: '"Muscle or Never — Your Intelligent Sarcopenia Prevention Partner" Integrating fitness, physiotherapy, and nutrition, our AI provides personalized advice to help seniors maintain muscle mass and mobility.'
     },
     momo: {
-      title: 'MoMo',
-      tagline: 'Gluteal Amnesia Reboot',
-      desc: 'A structured micro-exercise library designed to combat "sitting disease" and reconnect your glutes. Perfect for office workers and remote professionals.',
+      title: 'MoMo Senior',
+      tagline: 'Gentle Muscle Activation',
+      desc: 'Micro-exercises specifically designed for seniors to maintain muscle tone and joint health during daily activities.',
       stealth: 'Stealth',
       target: 'Target',
       benefit: 'Benefit',
@@ -252,8 +297,8 @@ export const translations = {
     },
     muscleMaster: {
       title: 'Muscle Master',
-      tagline: 'Rhythm & Muscle',
-      desc: 'An innovative rhythm game combining muscle training and music beats. No controller needed, just your camera!',
+      tagline: 'Fun & Strength',
+      desc: 'A fun, interactive way for seniors to build strength through rhythm-based movements. No equipment needed!',
       proposal: 'Game Design Proposal',
       sections: {
         concept: '1. Core Concept & Value Proposition',
@@ -378,15 +423,25 @@ export const translations = {
     }
   },
   zh: {
-    appName: 'AI形養師-股具肌',
-    tagline: 'AI 驅動體態分析',
-    description: '透過單張照片進行專業級身體排列評估。識別不平衡並獲得個性化的矯正指導。',
-    newAnalysis: '開始分析',
-    newAnalysisDesc: '使用相機或相簿開始新的體態評估。',
-    history: '歷史記錄',
-    historyDesc: '回顧過去的報告並追蹤您的進步。',
+    appName: '肌不可失-股具肌',
+    tagline: '長者肌肉流失預防專家',
+    description: '專為長者設計的智能體態管理與運動專家，致力於預防肌肉流失（肌少症），助您保持強健與獨立生活。',
+    newAnalysis: '體態檢測',
+    newAnalysisDesc: '使用相機進行體態與肌肉健康評估。',
+    history: '我的進度',
+    historyDesc: '追蹤您的肌肉力量與體態改善情況。',
     getStarted: '立即開始',
     viewRecords: '查看記錄',
+    userInfoForm: {
+      title: '基本資料 (選填)',
+      desc: '提供以下資料，我們將為您計算 BMI 與腰臀比，讓分析更全面。',
+      height: '身高 (cm)',
+      weight: '體重 (kg)',
+      waist: '腰圍 (cm)',
+      hip: '臀圍 (cm)',
+      placeholder: '例如: ',
+      startAnalysis: '開始分析'
+    },
     privacyFirst: '隱私優先',
     privacyFirstDesc: '分析在本地進行。您的照片永遠不會離開您的設備。',
     medicalGrade: '醫療級標準',
@@ -447,14 +502,49 @@ export const translations = {
     reportSaveFailed: '儲存報告失敗。',
     everythingFitness: 'Everything Fitness',
     everythingFitnessDesc: '利用智能電話拍攝辦公室或家居四周環境，以 AI 生成選擇適合的家居用品，並建議相應鍛鍊肌肉的運動。',
+    sarcopeniaScreening: {
+      title: '肌少症快速篩查',
+      tagline: '臨床評估標準',
+      desc: '結合 SARC-F 問卷與「五次坐下站起測試」，初步評估長者肌肉流失風險與嚴重程度。',
+      sarcf: {
+        title: 'SARC-F 篩查問卷',
+        desc: '臨床常用的肌少症風險評估工具。',
+        questions: [
+          { q: '力量：拿起或搬運 10 磅（約 4.5 公斤）的重物有困難嗎？', options: ['沒有困難', '有些困難', '非常困難或無法完成'] },
+          { q: '行走：走過一個房間有困難嗎？', options: ['沒有困難', '有些困難', '非常困難、需輔具或無法完成'] },
+          { q: '從椅子站起：從椅子或床上站起來有困難嗎？', options: ['沒有困難', '有些困難', '非常困難或不假他人之手無法完成'] },
+          { q: '爬樓梯：爬 10 級樓梯有困難嗎？', options: ['沒有困難', '有些困難', '非常困難或無法完成'] },
+          { q: '跌倒：過去一年中，您跌倒過幾次？', options: ['沒有跌倒', '1-3 次', '4 次或以上'] }
+        ],
+        result: 'SARC-F 總分',
+        interpretation: {
+          low: '風險較低。請繼續保持規律運動與均衡飲食！',
+          high: '風險較高。建議諮詢物理治療師或醫師進行進一步檢查。'
+        }
+      },
+      chairStand: {
+        title: '五次坐下站起測試 (5TSTS)',
+        desc: '評估下肢肌力與爆發力。記錄連續完成 5 次「坐下站起」所需的時間。',
+        instructions: '請坐在穩固的椅子上，雙手交叉抱胸。點擊開始後，盡快完成 5 次完全站起與坐下的動作。',
+        start: '開始計時',
+        stop: '我完成了！',
+        result: '完成時間',
+        seconds: '秒',
+        interpretation: {
+          excellent: '下肢肌力非常優秀！',
+          normal: '符合該年齡層的正常標準。',
+          slow: '速度較慢。建議加強腿部肌肉訓練，預防跌倒風險。'
+        }
+      }
+    },
     aiShapistChat: {
       title: 'AI形養師',
-      desc: '「AI形養師——三位一體的智能體態管理專家」融合健身、物治、營養三大領域，AI形養師透過即時對話，為您打造專屬的運動與飲食計畫。從體態優化到預警就醫建議，我們讓健康管理變得更聰明、更安全。'
+      desc: '「肌不可失——三位一體的智能體態管理專家」融合健身、物治、營養三大領域，AI形養師透過即時對話，為長者打造專屬的預防肌肉流失計畫。從體態優化到預警就醫建議，讓健康管理變得更聰明、更安全。'
     },
     momo: {
-      title: 'MoMo 微運動',
-      tagline: '重啟臀肌與對抗久坐',
-      desc: '專為久坐上班族與遠距工作者設計的微運動處方庫，針對長期久坐導致的「臀部神經斷連」進行重新啟動。',
+      title: 'MoMo 長者微運動',
+      tagline: '溫和肌肉活化',
+      desc: '專為長者設計的微運動處方，利用日常生活中的碎片時間，有效預防肌肉萎縮並維持關節靈活。',
       stealth: '隱蔽性',
       target: '解剖學目標',
       benefit: '活化效益',
@@ -628,8 +718,8 @@ export const translations = {
     },
     muscleMaster: {
       title: '練肌之達人',
-      tagline: '節奏與肌肉的碰撞',
-      desc: '結合「肌肉鍛鍊」與「音樂節拍」的創新運動節奏遊戲。不需控制器，用手機鏡頭捕捉你的熱血動作！',
+      tagline: '趣味與力量',
+      desc: '專為長者設計的趣味互動運動遊戲，結合音樂節拍與力量訓練，無需器材，隨時隨地鍛鍊肌肉！',
       proposal: '遊戲企劃書',
       sections: {
         concept: '1. 🎮 遊戲核心概念與價值主張',

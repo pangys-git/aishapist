@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { FilesetResolver, PoseLandmarker } from '@mediapipe/tasks-vision';
 import YouTube, { YouTubePlayer } from 'react-youtube';
 import { useLanguage } from '../context/LanguageContext';
-import { X, Play, Trophy } from 'lucide-react';
+import { X, Play, Trophy, AlertCircle, RefreshCw, Camera } from 'lucide-react';
 
 type NoteType = 'SQUAT' | 'HANDS_UP' | 'JUMP_JACK';
 
@@ -42,26 +42,26 @@ const generateLevel = (stage: number, level: number, name: string, bpm: number, 
 };
 
 const LEVELS: Level[] = [
-  // Stage 1: Lower Body (Squats only)
-  generateLevel(1, 1, 'Warm Up', 90, 90, 'p7ZsBPK656s', ['SQUAT']),
-  generateLevel(1, 2, 'Easy Pace', 100, 90, 'p7ZsBPK656s', ['SQUAT']),
-  generateLevel(1, 3, 'Steady Rhythm', 110, 90, 'p7ZsBPK656s', ['SQUAT']),
-  generateLevel(1, 4, 'Up Tempo', 120, 90, 'p7ZsBPK656s', ['SQUAT']),
-  generateLevel(1, 5, 'Leg Day', 128, 90, 'p7ZsBPK656s', ['SQUAT']),
+  // Stage 1: Lower Body (Focus on stability and basic strength)
+  generateLevel(1, 1, '基礎喚醒 (入門)', 70, 90, 'p7ZsBPK656s', ['SQUAT']),
+  generateLevel(1, 2, '穩健步伐 (初級)', 80, 90, 'p7ZsBPK656s', ['SQUAT']),
+  generateLevel(1, 3, '力量累積 (中級)', 90, 90, 'p7ZsBPK656s', ['SQUAT']),
+  generateLevel(1, 4, '活力躍動 (進階)', 100, 90, 'p7ZsBPK656s', ['SQUAT']),
+  generateLevel(1, 5, '下肢大師 (挑戰)', 110, 90, 'p7ZsBPK656s', ['SQUAT']),
 
-  // Stage 2: Core Shield (Squats + Hands Up)
-  generateLevel(2, 1, 'Core Intro', 100, 90, 'K4DyBUG242c', ['SQUAT', 'HANDS_UP']),
-  generateLevel(2, 2, 'Balance', 110, 90, 'K4DyBUG242c', ['SQUAT', 'HANDS_UP']),
-  generateLevel(2, 3, 'Coordination', 120, 90, 'K4DyBUG242c', ['SQUAT', 'HANDS_UP']),
-  generateLevel(2, 4, 'Core Burn', 130, 90, 'K4DyBUG242c', ['SQUAT', 'HANDS_UP']),
-  generateLevel(2, 5, 'Shield Master', 135, 90, 'K4DyBUG242c', ['SQUAT', 'HANDS_UP']),
+  // Stage 2: Core & Coordination (Squats + Hands Up)
+  generateLevel(2, 1, '核心啟動 (入門)', 75, 90, 'K4DyBUG242c', ['SQUAT', 'HANDS_UP']),
+  generateLevel(2, 2, '平衡練習 (初級)', 85, 90, 'K4DyBUG242c', ['SQUAT', 'HANDS_UP']),
+  generateLevel(2, 3, '協調訓練 (中級)', 95, 90, 'K4DyBUG242c', ['SQUAT', 'HANDS_UP']),
+  generateLevel(2, 4, '核心強化 (進階)', 105, 90, 'K4DyBUG242c', ['SQUAT', 'HANDS_UP']),
+  generateLevel(2, 5, '身心合一 (挑戰)', 115, 90, 'K4DyBUG242c', ['SQUAT', 'HANDS_UP']),
 
-  // Stage 3: Fat Burn (Squats + Hands Up + Jump Jacks)
-  generateLevel(3, 1, 'Cardio Start', 130, 90, 'TW9d8vYrVFQ', ['SQUAT', 'HANDS_UP', 'JUMP_JACK']),
-  generateLevel(3, 2, 'Sweat It', 140, 90, 'TW9d8vYrVFQ', ['SQUAT', 'HANDS_UP', 'JUMP_JACK']),
-  generateLevel(3, 3, 'High Energy', 150, 90, 'TW9d8vYrVFQ', ['SQUAT', 'HANDS_UP', 'JUMP_JACK']),
-  generateLevel(3, 4, 'Fat Melt', 160, 90, 'TW9d8vYrVFQ', ['SQUAT', 'HANDS_UP', 'JUMP_JACK']),
-  generateLevel(3, 5, 'Ultimate Burn', 170, 90, 'TW9d8vYrVFQ', ['SQUAT', 'HANDS_UP', 'JUMP_JACK']),
+  // Stage 3: Full Body Vitality (Squats + Hands Up + Jump Jacks)
+  generateLevel(3, 1, '全身舒展 (入門)', 80, 90, 'TW9d8vYrVFQ', ['SQUAT', 'HANDS_UP', 'JUMP_JACK']),
+  generateLevel(3, 2, '燃脂輕動 (初級)', 90, 90, 'TW9d8vYrVFQ', ['SQUAT', 'HANDS_UP', 'JUMP_JACK']),
+  generateLevel(3, 3, '活力全開 (中級)', 100, 90, 'TW9d8vYrVFQ', ['SQUAT', 'HANDS_UP', 'JUMP_JACK']),
+  generateLevel(3, 4, '極限挑戰 (進階)', 110, 90, 'TW9d8vYrVFQ', ['SQUAT', 'HANDS_UP', 'JUMP_JACK']),
+  generateLevel(3, 5, '肌力巔峰 (挑戰)', 120, 90, 'TW9d8vYrVFQ', ['SQUAT', 'HANDS_UP', 'JUMP_JACK']),
 ];
 
 interface MuscleMasterGameProps {
@@ -76,6 +76,9 @@ export const MuscleMasterGame: React.FC<MuscleMasterGameProps> = ({ onExit }) =>
   const [selectedStage, setSelectedStage] = useState<number>(1);
   const [selectedLevel, setSelectedLevel] = useState<Level>(LEVELS[0]);
   const [error, setError] = useState<string | null>(null);
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [hasStartedInit, setHasStartedInit] = useState(false);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -106,45 +109,102 @@ export const MuscleMasterGame: React.FC<MuscleMasterGameProps> = ({ onExit }) =>
 
   // Initialize MediaPipe and Camera
   useEffect(() => {
+    if (!hasStartedInit) return;
+    
     let stream: MediaStream | null = null;
     let isMounted = true;
 
     const init = async () => {
+      if (isInitializing) return;
+      setIsInitializing(true);
+      setError(null);
       try {
+        console.log("MuscleMaster: Starting initialization...");
         // 1. Setup Camera
-        stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } 
-        });
+        console.log("MuscleMaster: Requesting camera access...");
+        
+        // Check if Permissions API is available and check camera status
+        if (navigator.permissions && (navigator.permissions as any).query) {
+          try {
+            const status = await navigator.permissions.query({ name: 'camera' as any });
+            console.log("MuscleMaster: Camera permission status:", status.state);
+          } catch (pErr) {
+            console.warn("MuscleMaster: Permissions API query failed:", pErr);
+          }
+        }
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          throw new Error('您的瀏覽器不支援相機功能。請更換瀏覽器。');
+        }
+
+        try {
+          // Try with ideal constraints first for better quality
+          stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: { ideal: 'user' }, width: { ideal: 1280 }, height: { ideal: 720 } } 
+          });
+        } catch (e) {
+          console.warn("MuscleMaster: Ideal constraints failed, falling back to basic video:", e);
+          stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        }
+        console.log("MuscleMaster: Camera access granted.");
         if (videoRef.current && isMounted) {
           videoRef.current.srcObject = stream;
-          // Ensure video plays
           videoRef.current.onloadedmetadata = () => {
-            videoRef.current?.play().catch(e => console.error("Video play failed:", e));
+            console.log("MuscleMaster: Video metadata loaded.");
+            videoRef.current?.play().catch(e => console.error("MuscleMaster: Video play failed:", e));
           };
         }
 
         // 2. Setup MediaPipe
+        console.log("MuscleMaster: Loading MediaPipe vision tasks...");
         const vision = await FilesetResolver.forVisionTasks(
-          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
         );
-        const landmarker = await PoseLandmarker.createFromOptions(vision, {
-          baseOptions: {
-            modelAssetPath: "https://storage.googleapis.com/mediapipe-tasks/pose_landmarker/pose_landmarker_lite.task",
-            delegate: "CPU"
-          },
-          runningMode: "VIDEO",
-          numPoses: 1
-        });
+        console.log("MuscleMaster: MediaPipe vision tasks loaded. Creating PoseLandmarker...");
+        
+        let landmarker;
+        try {
+          landmarker = await PoseLandmarker.createFromOptions(vision, {
+            baseOptions: {
+              modelAssetPath: "https://storage.googleapis.com/mediapipe-tasks/pose_landmarker/pose_landmarker_lite.task",
+              delegate: "GPU"
+            },
+            runningMode: "VIDEO",
+            numPoses: 1
+          });
+        } catch (gpuError) {
+          console.warn("MuscleMaster: GPU initialization failed, falling back to CPU:", gpuError);
+          landmarker = await PoseLandmarker.createFromOptions(vision, {
+            baseOptions: {
+              modelAssetPath: "https://storage.googleapis.com/mediapipe-tasks/pose_landmarker/pose_landmarker_lite.task",
+              delegate: "CPU"
+            },
+            runningMode: "VIDEO",
+            numPoses: 1
+          });
+        }
+        console.log("MuscleMaster: PoseLandmarker created successfully.");
         
         if (isMounted) {
           landmarkerRef.current = landmarker;
           setGameState('MENU');
+          console.log("MuscleMaster: Initialization complete, state set to MENU.");
         }
       } catch (err: any) {
-        console.error("Initialization error:", err);
+        console.error("MuscleMaster: Initialization error:", err);
         if (isMounted) {
-          setError(err.message || gameData.cameraError);
+          let userFriendlyError = err.message || gameData.cameraError;
+          if (err.name === 'NotAllowedError' || err.message?.includes('Permission denied')) {
+            userFriendlyError = "相機存取被拒絕。請在瀏覽器設定中允許此應用程式使用相機，然後點擊「重試」。";
+          } else if (err.name === 'NotFoundError') {
+            userFriendlyError = "找不到相機設備。請確保您的裝置已連接相機。";
+          } else if (err.message) {
+            userFriendlyError = err.message;
+          }
+          setError(userFriendlyError);
         }
+      } finally {
+        if (isMounted) setIsInitializing(false);
       }
     };
 
@@ -157,7 +217,7 @@ export const MuscleMasterGame: React.FC<MuscleMasterGameProps> = ({ onExit }) =>
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
       if (audioCtxRef.current) audioCtxRef.current.close();
     };
-  }, []);
+  }, [retryCount, hasStartedInit]);
 
   const playBeep = (freq: number, type: OscillatorType = 'sine', duration = 0.1) => {
     if (!audioCtxRef.current) return;
@@ -452,16 +512,59 @@ export const MuscleMasterGame: React.FC<MuscleMasterGameProps> = ({ onExit }) =>
         
         {gameState === 'LOADING' && (
           <div className="text-center text-white bg-zinc-800 p-8 rounded-3xl shadow-2xl border border-zinc-700 max-w-sm w-full mx-4">
-            {!error && <div className="w-16 h-16 border-4 border-rose-500 border-t-transparent rounded-full animate-spin mx-auto mb-6" />}
-            <h3 className="text-xl font-bold mb-2">{error ? 'Error' : gameData.loading}</h3>
-            <p className="text-sm text-zinc-400 mb-6">{error || 'Please allow camera access if prompted.'}</p>
-            {error && (
-              <button
-                onClick={onExit}
-                className="w-full py-3 bg-white text-zinc-900 rounded-xl font-bold transition-colors hover:bg-zinc-200"
-              >
-                Go Back
-              </button>
+            {!hasStartedInit ? (
+              <>
+                <Camera className="w-16 h-16 text-rose-500 mx-auto mb-6" />
+                <h3 className="text-xl font-bold mb-2">準備開始遊戲</h3>
+                <p className="text-sm text-zinc-400 mb-6">點擊下方按鈕以啟動相機並開始 AI 姿態檢測。</p>
+                
+                <div className="bg-zinc-900/50 p-4 rounded-2xl mb-6 text-left">
+                  <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">電腦版提示：</h4>
+                  <ul className="text-xs text-zinc-400 space-y-1 list-disc pl-4">
+                    <li>請確保您的電腦已連接網路攝影機。</li>
+                    <li>若無法開啟，請檢查瀏覽器網址列左側是否已允許相機權限。</li>
+                    <li>建議使用 Chrome 或 Edge 瀏覽器以獲得最佳體驗。</li>
+                  </ul>
+                </div>
+
+                <button
+                  onClick={() => setHasStartedInit(true)}
+                  className="w-full py-4 bg-rose-500 hover:bg-rose-600 text-white rounded-2xl font-bold text-lg transition-colors shadow-lg"
+                >
+                  啟動相機
+                </button>
+              </>
+            ) : (
+              <>
+                {isInitializing && !error ? (
+                  <div className="w-16 h-16 border-4 border-rose-500 border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+                ) : error ? (
+                  <AlertCircle className="w-16 h-16 text-rose-500 mx-auto mb-6" />
+                ) : (
+                  <div className="w-16 h-16 border-4 border-rose-500 border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+                )}
+                
+                <h3 className="text-xl font-bold mb-2">{error ? '初始化失敗' : gameData.loading}</h3>
+                <p className="text-sm text-zinc-400 mb-6">{error || '正在準備 AI 引擎與相機...'}</p>
+                
+                <div className="space-y-3">
+                  {error && (
+                    <button
+                      onClick={() => setRetryCount(prev => prev + 1)}
+                      className="w-full py-3 bg-emerald-500 text-white rounded-xl font-bold transition-colors hover:bg-emerald-600 flex items-center justify-center"
+                    >
+                      <RefreshCw className={`w-5 h-5 mr-2 ${isInitializing ? 'animate-spin' : ''}`} />
+                      {isInitializing ? '正在重試...' : '重試'}
+                    </button>
+                  )}
+                  <button
+                    onClick={onExit}
+                    className="w-full py-3 bg-zinc-700 text-white rounded-xl font-bold transition-colors hover:bg-zinc-600"
+                  >
+                    返回主頁
+                  </button>
+                </div>
+              </>
             )}
           </div>
         )}
