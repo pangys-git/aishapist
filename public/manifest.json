@@ -1,0 +1,30 @@
+{
+  "name": "肌不可失 Muscle or Never",
+  "short_name": "MuscleOrNever",
+  "description": "長者肌肉流失預防專家 - Intelligent posture management and exercise expert",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

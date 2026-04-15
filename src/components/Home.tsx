@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Camera, History, ShieldCheck, Activity, ChevronRight, Dumbbell, Sparkles, Gamepad2, MessageSquare, ClipboardCheck } from 'lucide-react';
+import { Camera, History, ShieldCheck, Activity, ChevronRight, Dumbbell, Sparkles, Gamepad2, MessageSquare, ClipboardCheck, Info } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 interface HomeProps {
@@ -11,11 +11,13 @@ interface HomeProps {
   onMuscleMaster: () => void;
   onAIShapistChat: () => void;
   onSarcopeniaScreening: () => void;
+  onSarcopeniaInfo: () => void;
 }
 
-export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverythingFitness, onMoMo, onMuscleMaster, onAIShapistChat, onSarcopeniaScreening }) => {
+export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverythingFitness, onMoMo, onMuscleMaster, onAIShapistChat, onSarcopeniaScreening, onSarcopeniaInfo }) => {
   const { t } = useLanguage();
   const ssData = (t as any).sarcopeniaScreening;
+  const infoData = (t as any).sarcopeniaInfo;
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
@@ -36,6 +38,25 @@ export const Home: React.FC<HomeProps> = ({ onStart, onViewHistory, onEverything
       </motion.div>
 
       <div className="grid md:grid-cols-2 gap-6 mb-6">
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={onSarcopeniaInfo}
+          className="group relative overflow-hidden p-8 rounded-3xl bg-teal-600 text-white text-left transition-all md:col-span-2"
+        >
+          <div className="relative z-10">
+            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-6">
+              <Info className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold mb-2">{infoData.title}</h3>
+            <p className="text-teal-100 mb-6 line-clamp-2">{infoData.desc}</p>
+            <div className="flex items-center text-white font-semibold">
+              {t.getStarted} <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
+        </motion.button>
+
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}

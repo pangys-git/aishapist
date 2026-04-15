@@ -116,6 +116,48 @@ export const translations = {
         }
       }
     },
+    sarcopeniaInfo: {
+      title: 'Understanding Sarcopenia',
+      desc: 'Learn about the causes, symptoms, and prevention of sarcopenia to protect your muscle health.',
+      sections: {
+        definition: {
+          title: 'What is Sarcopenia?',
+          content: 'Sarcopenia is a syndrome characterized by progressive and generalized loss of skeletal muscle mass and strength with age. It not only affects the daily mobility of the elderly but also increases the risk of falls, fractures, physical disability, and mortality.'
+        },
+        symptoms: {
+          title: 'Common Symptoms',
+          items: [
+            'Slow Walking: Smaller steps and decreased walking speed.',
+            'Decreased Grip Strength: Difficulty wringing out a towel or opening jars.',
+            'Mobility Issues: Needing support to stand up from a chair, difficulty climbing stairs.',
+            'Frequent Falls: Falling two or more times within a year.',
+            'Weight Loss: Unintentional weight loss of more than 5% in six months.'
+          ]
+        },
+        causes: {
+          title: 'Main Causes',
+          items: [
+            'Aging: Hormonal changes and neuromuscular degeneration.',
+            'Inactivity: Prolonged sitting, bed rest, or lack of resistance training.',
+            'Malnutrition: Insufficient protein intake or Vitamin D deficiency.',
+            'Chronic Diseases: Such as diabetes, cardiovascular diseases, chronic inflammation, etc.'
+          ]
+        },
+        detection: {
+          title: 'Detection Methods',
+          content: 'You can use the "Sarcopenia Screening" provided in this app for a preliminary assessment, which includes the SARC-F questionnaire and the Chair Stand Test. If you have concerns, it is recommended to consult a medical professional for precise muscle mass measurement using Dual-energy X-ray Absorptiometry (DXA) or Bioelectrical Impedance Analysis (BIA).'
+        },
+        prevention: {
+          title: 'Prevention and Improvement',
+          items: [
+            'Regular Exercise: Perform resistance training (e.g., squats, lifting weights) and aerobic exercise at least twice a week.',
+            'Adequate Nutrition: Ensure sufficient intake of high-quality protein (e.g., lean meat, fish, eggs, legumes) at every meal.',
+            'Vitamin D Supplementation: Moderate sun exposure or supplementation through diet/supplements.',
+            'Regular Screening: Early detection allows for early intervention.'
+          ]
+        }
+      }
+    },
     aiShapistChat: {
       title: 'AI Muscle Expert',
       desc: '"Muscle or Never — Your Intelligent Sarcopenia Prevention Partner" Integrating fitness, physiotherapy, and nutrition, our AI provides personalized advice to help seniors maintain muscle mass and mobility.'
@@ -534,6 +576,48 @@ export const translations = {
           excellent: '下肢肌力非常優秀！',
           normal: '符合該年齡層的正常標準。',
           slow: '速度較慢。建議加強腿部肌肉訓練，預防跌倒風險。'
+        }
+      }
+    },
+    sarcopeniaInfo: {
+      title: '認識肌少症',
+      desc: '了解肌少症的成因、症狀與預防方法，守護肌肉健康。',
+      sections: {
+        definition: {
+          title: '什麼是肌少症？',
+          content: '肌少症（Sarcopenia）是指伴隨著年齡增長，骨骼肌質量流失、力量下降及功能減退的綜合症。它不僅會影響長者的日常活動能力，還會增加跌倒、骨折、失能甚至死亡的風險。'
+        },
+        symptoms: {
+          title: '常見症狀',
+          items: [
+            '走路遲緩：步伐變小、走路速度變慢。',
+            '握力下降：毛巾擰不乾、罐頭打不開。',
+            '行動吃力：從椅子上站起來需要支撐，爬樓梯困難。',
+            '反覆跌倒：一年內連續跌倒兩次或以上。',
+            '體重減輕：非刻意減重，但體重在半年內下降超過 5%。'
+          ]
+        },
+        causes: {
+          title: '主要成因',
+          items: [
+            '年齡增長：荷爾蒙變化與神經肌肉退化。',
+            '活動量不足：長期久坐、臥床或缺乏阻力訓練。',
+            '營養不良：蛋白質攝取不足，或維生素 D 缺乏。',
+            '慢性疾病：如糖尿病、心血管疾病、慢性發炎等。'
+          ]
+        },
+        detection: {
+          title: '檢測方法',
+          content: '您可以透過本應用程式提供的「肌少症快速篩查」進行初步評估，包含 SARC-F 問卷與椅子站立測試。若有疑慮，建議尋求專業醫師進行雙能 X 光吸收儀 (DXA) 或生物電阻抗分析 (BIA) 來精確測量肌肉量。'
+        },
+        prevention: {
+          title: '預防與改善',
+          items: [
+            '規律運動：每週至少進行兩次阻力訓練（如深蹲、舉啞鈴）及有氧運動。',
+            '充足營養：確保每餐攝取足夠的優質蛋白質（如瘦肉、魚、蛋、豆類）。',
+            '補充維生素 D：適度曬太陽或透過飲食/保健品補充。',
+            '定期篩查：及早發現，及早介入治療。'
+          ]
         }
       }
     },

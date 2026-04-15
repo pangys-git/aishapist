@@ -16,6 +16,7 @@ import { MoMoView } from './components/MoMoView';
 import { MuscleMasterView } from './components/MuscleMasterView';
 import { AIShapistChat } from './components/AIShapistChat';
 import { SarcopeniaScreeningView } from './components/SarcopeniaScreeningView';
+import { SarcopeniaInfoView } from './components/SarcopeniaInfoView';
 import { AnalysisResult, EverythingFitnessResult, UserInfo, SarcopeniaScreeningResult } from './types';
 import { AnimatePresence, motion } from 'motion/react';
 import { Languages } from 'lucide-react';
@@ -23,7 +24,7 @@ import { Languages } from 'lucide-react';
 import { storageService } from './services/storage';
 import { useLanguage } from './context/LanguageContext';
 
-type AppState = 'HOME' | 'CAPTURE' | 'ANALYZING' | 'REPORT' | 'HISTORY' | 'EVERYTHING_FITNESS_CAPTURE' | 'EVERYTHING_FITNESS_ANALYZING' | 'EVERYTHING_FITNESS_REPORT' | 'MOMO' | 'MUSCLE_MASTER' | 'AI_SHAPIST_CHAT' | 'SARCOPENIA_SCREENING';
+type AppState = 'HOME' | 'CAPTURE' | 'ANALYZING' | 'REPORT' | 'HISTORY' | 'EVERYTHING_FITNESS_CAPTURE' | 'EVERYTHING_FITNESS_ANALYZING' | 'EVERYTHING_FITNESS_REPORT' | 'MOMO' | 'MUSCLE_MASTER' | 'AI_SHAPIST_CHAT' | 'SARCOPENIA_SCREENING' | 'SARCOPENIA_INFO';
 
 export default function App() {
   const { t, language, setLanguage } = useLanguage();
@@ -103,6 +104,7 @@ export default function App() {
               onMuscleMaster={() => setState('MUSCLE_MASTER')}
               onAIShapistChat={() => setState('AI_SHAPIST_CHAT')}
               onSarcopeniaScreening={() => setState('SARCOPENIA_SCREENING')}
+              onSarcopeniaInfo={() => setState('SARCOPENIA_INFO')}
             />
           </motion.div>
         )}
@@ -272,6 +274,20 @@ export default function App() {
                 setCurrentSarcopeniaResult(result);
                 setState('CAPTURE');
               }}
+            />
+          </motion.div>
+        )}
+
+        {state === 'SARCOPENIA_INFO' && (
+          <motion.div
+            key="sarcopenia-info"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="fixed inset-0 bg-white z-50 overflow-y-auto"
+          >
+            <SarcopeniaInfoView 
+              onBack={() => setState('HOME')}
             />
           </motion.div>
         )}

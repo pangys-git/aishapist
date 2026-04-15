@@ -14,18 +14,26 @@ export default defineConfig(({mode}) => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
         manifest: {
-          name: 'AI Shapist',
-          short_name: 'Shapist',
-          description: 'AI-Powered Posture Analysis',
+          name: '肌不可失 Muscle or Never',
+          short_name: 'MuscleOrNever',
+          description: '長者肌肉流失預防專家 - Intelligent posture management and exercise expert',
           theme_color: '#10b981',
+          background_color: '#ffffff',
+          display: 'standalone',
           icons: [
             {
-              src: 'pwa-192x192.png',
+              src: 'icon.svg',
+              sizes: 'any',
+              type: 'image/svg+xml',
+              purpose: 'any maskable'
+            },
+            {
+              src: 'icon-192.png',
               sizes: '192x192',
               type: 'image/png'
             },
             {
-              src: 'pwa-512x512.png',
+              src: 'icon-512.png',
               sizes: '512x512',
               type: 'image/png'
             }
